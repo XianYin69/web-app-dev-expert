@@ -37,10 +37,10 @@ def static_findings(html):
     if sync_scripts:
         findings.append("%d script tag(s) without async/defer" % len(sync_scripts))
     imgs = re.findall(r"<img\b[^>]*>", html)
-    un sized = [i for i in imgs if "width" not in i or "height" not in i]
-    if un sized:
-        findings.append("%d <img> without width/height or aspect-ratio (CLS risk)" % len(un sized))
-    if re.search(r"<img[^>]+src=[^>]*>[^]*?<h1", html, re.I):
+    unsized = [i for i in imgs if "width" not in i or "height" not in i]
+    if unsized:
+        findings.append("%d <img> without width/height or aspect-ratio (CLS risk)" % len(unsized))
+    if re.search(r"(?s)<img[^>]+src=[^>]*>.*?<h1", html, re.I):
         findings.append("possible hero image discovered after content start")
     if "fetchpriority" not in html:
         findings.append("no fetchpriority hint on any resource (LCP discovery)")

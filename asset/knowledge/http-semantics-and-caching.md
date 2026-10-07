@@ -16,8 +16,7 @@ Parent: [asset](../asset.md) · Next: [server-api-patterns](server-api-patterns.
 - Client supplies `Idempotency-Key`; server stores key → response for a TTL
   (≥ the longest retry window) and replays it on duplicate delivery.
 - Retries must be safe: dedupe on the key, not on wall-clock equality.
-- Non-idempotent mutations behind a queue need a dead-letter path plus a
-  reconciliation job; log the key with every attempt.
+- Non-idempotent mutations behind a queue need a DLQ, a reconciliation job and the key logged per attempt.
 
 ## Conditional requests
 

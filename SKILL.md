@@ -1,6 +1,6 @@
 ---
 name: web-app-dev-expert
-version: 0.1.0
+version: 0.1.1
 description: >
   Web application engineering expert: HTTP semantics, idempotency and caching
   (ETag, Cache-Control); server-side REST, GraphQL, WebSocket, SSE; auth and
@@ -22,9 +22,8 @@ metadata:
 
 ## Scope
 
-- In: HTTP/cache semantics, server APIs, auth & sessions, security headers,
-  SSR/SSG, contracts & versioning, data access & migrations, queues & rate
-  limiting, observability, build/deploy, performance budgets.
+- In: HTTP/cache semantics, server APIs, auth & sessions, security headers, SSR/SSG,
+  contracts & migrations, queues & rate limiting, observability, build/deploy, budgets.
 - Out (delegated, see [dependence](dependence/dependence.md)): visual and
   interaction design → `web-design-expert`; browser framework code →
   `frontend-dev`; contract design → `interface-design-expert`; e2e
@@ -32,9 +31,8 @@ metadata:
 
 ## Reading order
 
-[branch](branch/branch.md) → [asset](asset/asset.md) →
-[references](references/references.md) →
-[resistance](resistance/resistance.md) → [scripts](scripts/scripts.md)
+[branch](branch/branch.md) → [asset](asset/asset.md) → [references](references/references.md)
+→ [resistance](resistance/resistance.md) → [scripts](scripts/scripts.md)
 
 ## Workflow
 
