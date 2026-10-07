@@ -1,0 +1,9 @@
+{
+  "id": "pt-<skill>-<slug>",
+  "skill": "<skill-id>",
+  "title": "<short title>",
+  "due": "YYYY-MM-DDTHH:MM:SS",
+  "status": "pending",
+  "action": {"type": "command", "argv": ["python", "-B", "scripts/<probe>.py"]},
+  "session_chain": ""
+}

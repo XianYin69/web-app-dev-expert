@@ -1,0 +1,56 @@
+{
+  "skill": "web-app-dev-expert",
+  "root": "Web application engineering",
+  "boundary": {
+    "in_scope": [
+      "http_semantics_caching", "server_api_patterns", "auth_session",
+      "security_hardening", "rendering_static", "data_migrations",
+      "queues_rate_limiting", "observability_deployment", "performance_budgets"
+    ],
+    "delegated": {
+      "visual_interaction_design": "web-design-expert",
+      "browser_framework_code": "frontend-dev",
+      "interface_contract_design": "interface-design-expert",
+      "e2e_automation": "webapp-testing",
+      "schema_and_query_optimisation": "database-management",
+      "concurrency_modeling": "concurrency-design",
+      "language_level_review": "python-expert",
+      "static_analysis_rules": "code-guidelines"
+    }
+  },
+  "leaves": [
+    {"id": 1, "name": "http-semantics-and-caching",
+     "path": "asset/knowledge/http-semantics-and-caching.md",
+     "topics": ["methods", "status-codes", "idempotency", "etag", "cache-control", "vary", "conditional-requests"]},
+    {"id": 2, "name": "server-api-patterns",
+     "path": "asset/knowledge/server-api-patterns.md",
+     "topics": ["rest", "graphql", "websocket", "sse", "pagination", "error-envelope", "versioning", "sunset"]},
+    {"id": 3, "name": "auth-and-session",
+     "path": "asset/knowledge/auth-and-session.md",
+     "topics": ["cookie-attributes", "session-rotation", "jwt", "refresh-rotation", "oauth2", "pkce", "oidc"]},
+    {"id": 4, "name": "security-hardening",
+     "path": "asset/knowledge/security-hardening.md",
+     "topics": ["csp", "hsts", "xss", "csrf", "ssrf", "injection", "cors", "open-redirect"]},
+    {"id": 5, "name": "rendering-and-static-generation",
+     "path": "asset/knowledge/rendering-and-static-generation.md",
+     "topics": ["ssr", "ssg", "isr", "hydration", "edge-caching", "degraded-render"]},
+    {"id": 6, "name": "data-access-and-migrations",
+     "path": "asset/knowledge/data-access-and-migrations.md",
+     "topics": ["pooling", "replicas", "transactions", "expand-contract", "backfill", "ddl-safety"]},
+    {"id": 7, "name": "queues-and-rate-limiting",
+     "path": "asset/knowledge/queues-and-rate-limiting.md",
+     "topics": ["idempotent-consumers", "dlq", "backpressure", "token-bucket", "sliding-window", "429"]},
+    {"id": 8, "name": "observability-and-deployment",
+     "path": "asset/knowledge/observability-and-deployment.md",
+     "topics": ["structured-logs", "tracing", "red-use", "containers", "tls", "reverse-proxy", "canary", "rollback"]},
+    {"id": 9, "name": "performance-budgets",
+     "path": "asset/knowledge/performance-budgets.md",
+     "topics": ["lcp", "inp", "cls", "bundle-size", "lazy-loading", "prefetch", "field-data"]}
+  ],
+  "probes": [
+    "check_response_headers.py", "check_tls_chain.py", "probe_cors_preflight.py",
+    "check_cookie_attrs.py", "test_cache_compression.py", "sample_web_vitals.py",
+    "scan_dependency_vulns.py", "probe_open_redirect.py", "probe_injection_surface.py",
+    "check_idempotency.py", "check_api_contract.py", "report_bundle_budget.py"
+  ]
+}

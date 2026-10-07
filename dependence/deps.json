@@ -1,0 +1,110 @@
+{
+  "skill": "web-app-dev-expert",
+  "generated_at": "2026-10-07T08:40:00",
+  "dependencies": [
+    {
+      "name": "web-design-expert",
+      "source_url": "local://web-design-expert",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"web-design-expert\", input=<视觉/交互/响应式诉求>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "frontend-dev",
+      "source_url": "local://frontend-dev",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"frontend-dev\", input=<浏览器端框架实操>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "interface-design-expert",
+      "source_url": "local://interface-design-expert",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"interface-design-expert\", input=<接口契约设计>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "database-management",
+      "source_url": "local://database-management",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"database-management\", input=<库表设计与查询调优>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "concurrency-design",
+      "source_url": "local://concurrency-design",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"concurrency-design\", input=<并发模型与竞态分析>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "webapp-testing",
+      "source_url": "local://webapp-testing",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"webapp-testing\", input=<端到端自动化测试>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "python-expert",
+      "source_url": "local://python-expert",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"python-expert\", input=<Python 实现细节>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "code-guidelines",
+      "source_url": "local://code-guidelines",
+      "license": "MIT",
+      "version": ">=0.1.0",
+      "install": "SMS skill 已注册；调用：skill(name=\"code-guidelines\", input=<静态审查与风格>)",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "git",
+      "source_url": "https://github.com/git/git",
+      "license": "GPL-2.0-only",
+      "version": ">=2.30",
+      "install": "winget install Git.Git / apt install git",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "node",
+      "source_url": "https://github.com/nodejs/node",
+      "license": "MIT",
+      "version": ">=18",
+      "install": "winget install OpenJS.NodeJS.LTS / apt install nodejs",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "python",
+      "source_url": "https://github.com/python/cpython",
+      "license": "PSF-2.0",
+      "version": ">=3.11",
+      "install": "winget install Python.Python.3.12 / apt install python3",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "curl",
+      "source_url": "https://github.com/curl/curl",
+      "license": "curl (MIT-like)",
+      "version": ">=7.80",
+      "install": "winget install curl.curl / apt install curl",
+      "checked_at": "2026-10-07"
+    },
+    {
+      "name": "openssl",
+      "source_url": "https://github.com/openssl/openssl",
+      "license": "Apache-2.0",
+      "version": ">=3.0",
+      "install": "winget install FireGiant.OpenSSL / apt install openssl",
+      "checked_at": "2026-10-07"
+    }
+  ]
+}
