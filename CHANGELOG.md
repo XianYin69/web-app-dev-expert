@@ -13,13 +13,19 @@
 - `scripts/deps_check.py`：`deps.json` 六字段与 `source_url` 原始链接校验，`local://`
   目标在位性、`checked_at` 时效。
 - `scripts/_common.py`：共用根路径、文本遍历与统一 `RESULT PASS|FAIL` 出口。
+- 验证留痕：正反双链辩论（`logic_chain.py debate`，正方 7 步 / 反方 4 步 → 通过）与
+  逐支门禁验证（干净样本 rc=0、缺陷样本 rc=1、不可用 rc=2 全部符合约定）。
 - 补齐正文已引用但缺失的 6 个探针：`check_idempotency.py`、`check_api_contract.py`、
   `probe_injection_surface.py`、`probe_open_redirect.py`、`report_bundle_budget.py`、
   `scan_dependency_vulns.py`（纯标准库、只读、可 `--format json`）。
 
 ### Fixed
-- `scripts/sample_web_vitals.py`：`un sized` 非法标识符导致 SyntaxError，整支脚本不可
-  运行；改为 `unsized`，现可静态分析 LCP/CLS/INP 风险因子。
+- `sample_web_vitals.py`：`un sized` 非法标识符致 SyntaxError（整支不可跑）与 `[^]*?`
+  非法字符集致 PatternError，改为 `unsized` / `(?s)`。
+- `check_tls_chain.py`：CPython 3.14 的 `getpeercert()['subject']` 为嵌套元组，
+  `dict(...)` 直接 ValueError；加 `flatten()` 归一，现可对真实主机出结论。
+- 六支探针与 `scan_dependency_vulns.py`：补 `TimeoutError` 分支（3.14 读超时不再抛栈），
+  不可达一律 rc=2 并报因。
 - 悬空引用归零：`SKILL.md → scripts/scripts.md` 与六处 `scripts/*.py` 正文引用。
 
 ### Changed

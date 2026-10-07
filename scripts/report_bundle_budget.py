@@ -22,6 +22,9 @@ import sys
 
 from _common import emit
 
+DEFAULTS = {"route_budget_k": 170, "third_party_k": 60,
+            "font_k": 60, "hero_image_k": 0}
+
 JS = re.compile(r"\.js$", re.I)
 CSS = re.compile(r"\.css$", re.I)
 FONT = re.compile(r"\.(woff2?|ttf|eot)$", re.I)
@@ -54,6 +57,70 @@ def from_dir(root):
     return out
 
 
+def size(item):
+    return item["gzip"] or item["bytes"]
+
+
+def vendor_like(path):
+    base = os.path.basename(path)
+    return ("vendor" in path or "node_modules" in path
+            or base.startswith(("react", "vue", "lodash", "moment")))
+
+
+def audit(assets, budget):
+    """Sum sizes per class and compare with the budget (never invents sizes)."""
+    k = 1024.0
+
+    def total(match=None, pred=None):
+        out = 0
+        for a in assets:
+            path = a["path"]
+            if match is not None and not match.search(path):
+                continue
+            if pred is not None and not pred(path):
+                continue
+            out += size(a)
+        return out
+
+    routes = total(match=JS, pred=lambda p: not vendor_like(p))
+    vendor = total(pred=vendor_like)
+    fonts = total(match=FONT)
+    css = total(match=CSS)
+    cap = budget["route_budget_k"] * k
+    findings = []
+    if vendor > budget["third_party_k"] * k:
+        findings.append("third-party JS %.0fk > budget %dk"
+                        % (vendor / k, budget["third_party_k"]))
+    if routes > cap:
+        findings.append("route JS %.0fk > budget %dk"
+                        % (routes / k, budget["route_budget_k"]))
+    if fonts > budget["font_k"] * k:
+        findings.append("fonts %.0fk > budget %dk"
+                        % (fonts / k, budget["font_k"]))
+    for a in assets:
+        if JS.search(a["path"]) and size(a) > cap:
+            findings.append("single chunk over budget: %s (%.0fk)"
+                            % (a["path"], size(a) / k))
+    findings += image_gate(assets, budget, k)
+    summary = {"assets": len(assets), "route_js_k": round(routes / k, 1),
+               "vendor_js_k": round(vendor / k, 1), "css_k": round(css / k, 1),
+               "fonts_k": round(fonts / k, 1)}
+    return summary, findings
+
+
+def image_gate(assets, budget, k):
+    if not budget.get("hero_image_k"):
+        return []
+    imgs = [a for a in assets if IMG.search(a["path"])]
+    if not imgs:
+        return []
+    biggest = max(imgs, key=size)
+    if size(biggest) > budget["hero_image_k"] * k:
+        return ["largest image %s over %dk"
+                % (biggest["path"], budget["hero_image_k"])]
+    return []
+
+
 def main():
     argp = argparse.ArgumentParser(description=__doc__)
     argp.add_argument("--manifest")
@@ -61,53 +128,31 @@ def main():
     argp.add_argument("--dir")
     argp.add_argument("--format", choices=("text", "json"), default="text")
     args = argp.parse_args()
-    assets = []
-    if args.manifest:
-        assets = load_manifest(args.manifest)
-    elif args.dir and os.path.isdir(args.dir):
-        assets = from_dir(args.dir)
+    assets = load_assets(args)
     if not assets:
         print("error: no asset data — pass --manifest <json> or --dir <build dir>")
         return 2
-    budget = {"route_budget_k": 170, "third_party_k": 60, "font_k": 60}
+    budget = dict(DEFAULTS)
     if args.budget:
         with open(args.budget, "r", encoding="utf-8") as handle:
             budget.update(json.load(handle))
-    k = 1024.0
-
-    def group(pred):
-        return sum(a["gzip"] or a["bytes"] for a in assets if pred(a["path"]))
-
-    vendor = group(lambda p: "vendor" in p or "node_modules" in p or os.path.basename(p).startswith(("react", "vue")))
-    routes = group(lambda p: JS.search(p) and "vendor" not in p)
-    fonts = group(FONT)
-    css = group(CSS)
-    heavy = [a for a in assets if (a["gzip"] or a["bytes"]) > budget["route_budget_k"] * k and JS.search(a["path"])]
-    findings = []
-    if vendor > budget["third_party_k"] * k:
-        findings.append("third-party JS %.0fk > budget %dk" % (vendor / k, budget["third_party_k"]))
-    if routes > budget["route_budget_k"] * k:
-        findings.append("route JS %.0fk > budget %dk" % (routes / k, budget["route_budget_k"]))
-    if fonts > budget["font_k"] * k:
-        findings.append("fonts %.0fk > budget %dk" % (fonts / k, budget["font_k"]))
-    for a in heavy:
-        findings.append("single chunk over budget: %s (%.0fk)" % (a["path"], (a["gzip"] or a["bytes"]) / k))
-    imgs = [a for a in assets if IMG.search(a["path"])]
-    if imgs and budget.get("hero_image_k"):
-        biggest = max(imgs, key=lambda a: a["gzip"] or a["bytes"])
-        if (biggest["gzip"] or biggest["bytes"]) > budget["hero_image_k"] * k:
-            findings.append("largest image %s over %dk" % (biggest["path"], budget["hero_image_k"]))
-    summary = {"assets": len(assets), "route_js_k": round(routes / k, 1),
-               "vendor_js_k": round(vendor / k, 1), "css_k": round(css / k, 1),
-               "fonts_k": round(fonts / k, 1)}
+    summary, findings = audit(assets, budget)
     if args.format == "json":
-        print(json.dumps({"summary": summary, "budget": budget, "findings": findings},
-                         ensure_ascii=False))
+        print(json.dumps({"summary": summary, "budget": budget,
+                          "findings": findings}, ensure_ascii=False))
         return 1 if findings else 0
-    print("bundle: %d assets | route_js=%.0fk vendor=%.0fk css=%.0fk fonts=%.0fk" % (
-        summary["assets"], summary["route_js_k"], summary["vendor_js_k"],
-        summary["css_k"], summary["fonts_k"]))
+    print("bundle: %d assets | route_js=%.0fk vendor=%.0fk css=%.0fk fonts=%.0fk"
+          % (summary["assets"], summary["route_js_k"], summary["vendor_js_k"],
+             summary["css_k"], summary["fonts_k"]))
     return emit(findings)
+
+
+def load_assets(args):
+    if args.manifest:
+        return load_manifest(args.manifest)
+    if args.dir and os.path.isdir(args.dir):
+        return from_dir(args.dir)
+    return []
 
 
 if __name__ == "__main__":

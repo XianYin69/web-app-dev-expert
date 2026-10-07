@@ -43,7 +43,7 @@ def probe(base, method, path, headers):
             return resp.status
     except urllib.error.HTTPError as exc:
         return exc.code
-    except (urllib.error.URLError, OSError):
+    except (urllib.error.URLError, TimeoutError, OSError):
         return None
 
 

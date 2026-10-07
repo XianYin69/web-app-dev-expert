@@ -24,8 +24,8 @@ def fetch(url):
             return resp.status, resp.read(400000).decode("utf-8", "replace")
     except urllib.error.HTTPError as exc:
         return exc.code, exc.read(400000).decode("utf-8", "replace")
-    except (urllib.error.URLError, OSError) as exc:
-        return None, str(exc)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        return None, "%s: %s" % (type(exc).__name__, exc)
 
 
 def static_findings(html):

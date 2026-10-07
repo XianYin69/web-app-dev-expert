@@ -25,6 +25,21 @@ def parse_date(value):
     return datetime.strptime(value, fmt).replace(tzinfo=timezone.utc)
 
 
+def flatten(rdn_seq):
+    """ssl.getpeercert() returns ((('commonName','x'),),) on CPython 3.14 and
+    (('commonName','x'),) on some builds -- normalise to a flat dict."""
+    out = {}
+    for item in rdn_seq or ():
+        if isinstance(item, tuple) and len(item) == 2 and all(
+                isinstance(x, str) for x in item):
+            out[item[0]] = item[1]
+            continue
+        for pair in item:
+            if isinstance(pair, tuple) and len(pair) == 2:
+                out[pair[0]] = pair[1]
+    return out
+
+
 def audit(host, version, cipher, cert):
     findings = []
     if version not in ("TLSv1.2", "TLSv1.3"):
@@ -45,7 +60,7 @@ def audit(host, version, cipher, cert):
         findings.append("certificate expires in %d days (%s)" % (days, cert["notAfter"]))
     if not_before > now:
         findings.append("certificate not yet valid")
-    subjects = dict(x for x in cert["subject"])
+    subjects = flatten(cert.get("subject", ()))
     cn = subjects.get("commonName", "")
     sans = [v for k, v in cert.get("subjectAltName", ()) if k == "DNS"]
     if host not in sans and not (cn == host):

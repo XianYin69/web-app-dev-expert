@@ -22,8 +22,8 @@ import urllib.request
 
 from _common import emit
 
-NAME_LINE = re.compile(r"^\s*([A-Za-z0-9_.\-]+)\s*==\s*([^\s;#]+)")
-GEM_LINE = re.compile(r"^\s*([A-Za-z0-9_.\-]+)\s+\(([^)]+)\)")
+NAME_LINE = re.compile(r"^\s*([A-Za-z0-9_.\-]+)\s*==\s*([^\s;#]+)", re.M)
+GEM_LINE = re.compile(r"^\s*([A-Za-z0-9_.\-]+)\s+\(([^)]+)\)", re.M)
 
 
 def parse(lock):
@@ -42,14 +42,15 @@ def parse(lock):
                 items.append((name, ver, "npm"))
     elif base.startswith("requirements") or lock.endswith(".txt"):
         items += [(n, v, "PyPI") for n, v in NAME_LINE.findall(text)]
-    elif base.startswith("poetry.lock") or base.endswith(".lock") and "[[package]]" in text:
+    elif base.startswith("poetry.lock") or (
+            base.endswith(".lock") and "[[package]]" in text):
         name = re.findall(r'name = "([^"]+)"', text)
         ver = re.findall(r'version = "([^"]+)"', text)
         items += [(n, v, "PyPI") for n, v in zip(name, ver)]
     elif base.startswith("gemfile"):
         items += [(n, v, "RubyGems") for n, v in GEM_LINE.findall(text)]
     elif base.endswith(".mod"):
-        for m in re.finditer(r"^\s*([^\s]+)\s+(v[0-9][^\s]*)", text, re.M):
+        for m in re.finditer(r"^\s*(\S+)\s+(v[0-9]\S*)", text, re.M):
             items.append((m.group(1), m.group(2), "Go"))
     else:
         return items, "parse-skipped: unknown lockfile format"
@@ -64,8 +65,8 @@ def osv(name, version, ecosystem):
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             doc = json.loads(resp.read().decode("utf-8", "replace"))
-    except (urllib.error.URLError, OSError, ValueError) as exc:
-        return None, str(exc)
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+        return None, "%s: %s" % (type(exc).__name__, exc)
     return [v.get("id", "?") for v in doc.get("vulns", [])], ""
 
 
@@ -83,13 +84,26 @@ def main():
     if skip:
         print("error: %s (%s)" % (skip, args.lock))
         return 2
+    findings, advisories, errored = audit(items, args)
+    if args.format == "json":
+        print(json.dumps({"lockfile": args.lock, "packages": len(items),
+                          "advisories": advisories, "findings": findings},
+                         ensure_ascii=False))
+        return 1 if findings else 0
+    print("packages parsed: %d | advisories: %d | lockfile: %s"
+          % (len(items), len(advisories), args.lock))
+    return emit(findings)
+
+
+def audit(items, args):
     findings, advisories, errored = [], [], 0
     if len(items) > args.top:
-        findings.append("%d packages exceeds --top %d — audit truncated" % (len(items), args.top))
+        findings.append("%d packages exceeds --top %d — audit truncated"
+                        % (len(items), args.top))
     for name, version, eco in items[: args.top]:
         if args.offline:
             continue
-        ids, err = osv(name, version, eco)
+        ids, _ = osv(name, version, eco)
         if ids is None:
             errored += 1
             continue
@@ -97,15 +111,12 @@ def main():
             advisories.append({"name": name, "version": version, "osv": ids})
             findings.append("%s@%s (%s): %s" % (name, version, eco, ", ".join(ids)))
     if args.offline:
-        findings.append("offline mode: %d packages parsed but NOT audited upstream" % len(items))
+        findings.append("offline mode: %d packages parsed but NOT audited"
+                        " upstream" % len(items))
     if errored:
-        findings.append("%d queries failed — treated as unaudited, not as pass" % errored)
-    if args.format == "json":
-        print(json.dumps({"lockfile": args.lock, "packages": len(items),
-                          "advisories": advisories, "findings": findings}, ensure_ascii=False))
-        return 1 if findings else 0
-    print("packages parsed: %d | advisories: %d | lockfile: %s" % (len(items), len(advisories), args.lock))
-    return emit(findings)
+        findings.append("%d queries failed — treated as unaudited, not as pass"
+                        % errored)
+    return findings, advisories, errored
 
 
 if __name__ == "__main__":

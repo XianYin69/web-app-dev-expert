@@ -59,8 +59,8 @@ def probe(url, target, handler):
             return resp.status, resp.headers.get("Location", "")
     except urllib.error.HTTPError as exc:
         return exc.code, exc.headers.get("Location", "")
-    except urllib.error.URLError as exc:
-        return None, str(exc.reason)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        return None, str(getattr(exc, "reason", None) or exc)
 
 
 def main():

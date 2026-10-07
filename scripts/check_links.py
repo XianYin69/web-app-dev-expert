@@ -21,7 +21,8 @@ import sys
 from _common import emit, read_text, skill_root, walk_text
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
-PROSE = re.compile(r"(?<![\w/])((?:scripts|asset|references|resistance|branch|dependence|planned_tasks)/[\w\-./]+\.(?:py|ps1|md|json))")
+DIRS = "scripts|asset|references|resistance|branch|dependence|planned_tasks"
+PROSE = re.compile("(?<![\\w/])((?:%s)/[\\w\\-./]+\\.(?:py|ps1|md|json))" % DIRS)
 URL = re.compile(r"<(https?://[^\s<>]+)>")
 BAD_URL = re.compile(r"https?://(?:\s|//)", re.I)
 SKIP_PREFIX = ("http://", "https://", "mailto:", "#", "local://", "sms:")
