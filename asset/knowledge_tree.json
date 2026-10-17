@@ -15,7 +15,7 @@
       "schema_and_query_optimisation": "database-management",
       "concurrency_modeling": "concurrency-design",
       "language_level_review": "python-expert",
-      "static_analysis_rules": "code-guidelines"
+      "static_analysis_rules": "general-software-dev"
     }
   },
   "leaves": [

@@ -14,7 +14,7 @@
 | `concurrency-design` | 并发模型证明、锁与内存序分析 | `skill(name="concurrency-design", input=<并发分析>)` |
 | `webapp-testing` | 端到端自动化测试编写与执行 | `skill(name="webapp-testing", input=<e2e 诉求>)` |
 | `python-expert` | Python 语言级实现细节 | `skill(name="python-expert", input=<Python 问题>)` |
-| `code-guidelines` | 静态审查规则与风格基线 | `skill(name="code-guidelines", input=<审查诉求>)` |
+| `general-software-dev` | 静态审查规则与风格基线 | `skill(name="general-software-dev", input=<审查诉求>)` |
 
 分工原则：本技能回答「服务端必须保证什么」；上述技能回答「那一层怎么做」。
 跨界问题先在本技能定位到叶，再按表移交，禁止两边各写一遍正文。

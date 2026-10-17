@@ -59,11 +59,11 @@
       "checked_at": "2026-10-07"
     },
     {
-      "name": "code-guidelines",
-      "source_url": "local://code-guidelines",
+      "name": "general-software-dev",
+      "source_url": "local://general-software-dev",
       "license": "MIT",
       "version": ">=0.1.0",
-      "install": "SMS skill 已注册；调用：skill(name=\"code-guidelines\", input=<静态审查与风格>)",
+      "install": "SMS skill 已注册；调用：skill(name=\"general-software-dev\", input=<静态审查与风格>)",
       "checked_at": "2026-10-07"
     },
     {
