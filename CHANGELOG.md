@@ -48,3 +48,7 @@
 - `dependence/deps.json`：外派技能 `local://` 声明（每条附 `source_url`）。
 - `planned_tasks/`：README + template.json（声明交 SMS 调度器，技能自身不执行）。
 - `LICENSE`：MIT；`.gitignore`：忽略 `tmp/`、`__pycache__/`、`*.pyc`、IDE、`.env`、`*.log`。
+
+## [2026-10-18]
+### Changed
+- SKILL.md 新增「变更日志规范」红线（对齐 Skill_Generator 新特性批量更新）。
